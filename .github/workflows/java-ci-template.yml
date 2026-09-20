@@ -14,6 +14,10 @@ on:
         required: false
         type: boolean
         default: true
+      project-path:
+        required: false
+        type: string
+        default: '.'
 
 jobs:
   build-test-install:
@@ -32,12 +36,15 @@ jobs:
 
       - name: Compile project
         run: mvn -B compile
+        working-directory: ${{ inputs.project-path }}
 
       - name: Run tests
         if: ${{ inputs.run-tests }}
         run: mvn -B test
+        working-directory: ${{ inputs.project-path }}
 
       - name: Build artifact
         if: ${{ inputs.build-artifact }}
         run: mvn -B package -DskipTests
+        working-directory: ${{ inputs.project-path }}
 
