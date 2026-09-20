@@ -1,0 +1,43 @@
+name: Java CI template
+
+on:
+  workflow_call:
+    inputs:
+      java-version:
+        required: true
+        type: string
+      run-tests:
+        required: false
+        type: boolean
+        default: true
+      build-artifact:
+        required: false
+        type: boolean
+        default: true
+
+jobs:
+  build-test-install:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ inputs.java-version }}
+          cache: maven
+
+      - name: Compile project
+        run: mvn -B compile
+
+      - name: Run tests
+        if: ${{ inputs.run-tests }}
+        run: mvn -B test
+
+      - name: Build artifact
+        if: ${{ inputs.build-artifact }}
+        run: mvn -B package -DskipTests
+
